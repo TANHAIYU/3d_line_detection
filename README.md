@@ -2,7 +2,7 @@
 ***
 - This is the reimplementation of [Iterative Hough Transform for Line Detection in 3D Point Clouds](https://www.ipol.im/pub/art/2017/208/). This implementation organizes the algorithm into a library that can be used in plug-and-play style easily.
 
-- Image of semihemisphere whose verices show directions for the method's parameter space discretization
+- Image of semihemisphere whose vertices show directions for the method's parameter space discretization
 
 ![semihemisphere](./docs/images/semihemisphere.png)
 
