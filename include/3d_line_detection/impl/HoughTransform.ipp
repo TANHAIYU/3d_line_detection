@@ -38,11 +38,22 @@ void HoughTransform<POINT_CLOUD_TYPE>::votePoint(const PointCloudType& point, co
 }
 
 template <typename POINT_CLOUD_TYPE>
-std::size_t HoughTransform<POINT_CLOUD_TYPE>::getLine(pcl::ModelCoefficients& coeffs, const float minRange,
-                                                      const float deltaRange) const
+int HoughTransform<POINT_CLOUD_TYPE>::getLine(pcl::ModelCoefficients& coeffs, const float minRange,
+                                              const float deltaRange,
+                                              const std::vector<std::size_t>& accumulatorCellIndices) const
 {
-    auto maxIt = std::max_element(m_accumulator.begin(), m_accumulator.end());
-    std::size_t index = std::distance(m_accumulator.begin(), maxIt);
+    coeffs.values.resize(6);
+
+    if (accumulatorCellIndices.empty()) {
+        return -1;
+    }
+
+    auto maxIndicesIt = std::max_element(
+        accumulatorCellIndices.begin(), accumulatorCellIndices.end(),
+        [this](const std::size_t idx1, const std::size_t idx2) { return m_accumulator[idx1] < m_accumulator[idx2]; });
+
+    std::size_t index = *maxIndicesIt;
+    const int numVote = m_accumulator[index];
 
     std::size_t xIndex = index / (m_param.numRangeBin * m_sphere.vertices().size());
     float x = minRange + xIndex * deltaRange;
@@ -64,7 +75,7 @@ std::size_t HoughTransform<POINT_CLOUD_TYPE>::getLine(pcl::ModelCoefficients& co
     coeffs.values[4] = direction[1];
     coeffs.values[5] = direction[2];
 
-    return *maxIt;
+    return numVote;
 }
 
 template <typename POINT_CLOUD_TYPE>
@@ -85,12 +96,20 @@ HoughTransform<POINT_CLOUD_TYPE>::run(const PointCloudPtr& cloud)
         this->votePoint(point, minRange, deltaRange, true);
     }
 
+    // only consider cells whose number of votes surpass vote number threshold
+    std::vector<std::size_t> accumulatorCellIndices;
+    for (std::size_t i = 0; i < m_accumulator.size(); ++i) {
+        if (m_accumulator[i] >= m_param.minNumVote) {
+            accumulatorCellIndices.emplace_back(i);
+        }
+    }
+
     LineSegment3Ds result;
     pcl::ModelCoefficients coeffs;
     std::size_t remainNumPoints = cloud->size();
     std::vector<char> ignorePointIndices(cloud->size(), false);
-    while (remainNumPoints > 1) {
-        std::size_t numVotes = this->getLine(coeffs, minRange, deltaRange);
+    while (remainNumPoints >= m_param.minNumVote) {
+        std::size_t numVotes = this->getLine(coeffs, minRange, deltaRange, accumulatorCellIndices);
         if (numVotes < m_param.minNumVote) {
             break;
         }

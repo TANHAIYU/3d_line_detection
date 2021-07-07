@@ -44,6 +44,7 @@ make app # to build the examples
 ```bash
 # ./build/examples/3d_line_detection_app [path/to/pcd/file] [use/default/setting/yes:1/no:0] [num/range/bin] [sphere/granularity] [min/num/vote] [distance/to/line/thresh]
 # eg: ./build/examples/3d_line_detection_app ./data/test_cloud.pcd 0 64 4 10 0.2
+# note that if you increase number of accumulator cells, you need to reduce the threshold of minimum vote number
 ```
 
 <table>

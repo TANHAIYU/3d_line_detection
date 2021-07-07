@@ -28,6 +28,9 @@ template <typename POINT_CLOUD_TYPE> class LineSegment3D
         , m_coeffs(coeffs)
         , m_inlierIndices()
     {
+        if (m_coeffs.values.size() != 6) {
+            throw std::runtime_error("invalid size of line coefficients");
+        }
     }
 
     static std::vector<int> getPointIndicesCloseToLine(const PointCloudPtr& cloud, const pcl::ModelCoefficients& coeffs,

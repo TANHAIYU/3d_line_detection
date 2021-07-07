@@ -39,7 +39,8 @@ template <typename POINT_CLOUD_TYPE> class HoughTransform
     LineSegment3Ds run(const PointCloudPtr& cloud);
 
  private:
-    std::size_t getLine(pcl::ModelCoefficients& coeffs, const float minRange, const float deltaRange) const;
+    int getLine(pcl::ModelCoefficients& coeffs, const float minRange, const float deltaRange,
+                const std::vector<std::size_t>& accumulatorCellIndices) const;
 
     float calcNorm(const PointCloudType& point) const;
 

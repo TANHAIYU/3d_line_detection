@@ -30,12 +30,18 @@ std::vector<int> LineSegment3D<POINT_CLOUD_TYPE>::getPointIndicesCloseToLine(
         return {};
     }
 
+    if (ignorePointIndices.size() != cloud->size()) {
+        throw std::runtime_error("sizes mistmach");
+    }
+
     std::vector<int> pointIndices;
 
     const Eigen::Vector4f linePoint(coeffs.values[0], coeffs.values[1], coeffs.values[2], 0);
     const Eigen::Vector4f lineDirection(coeffs.values[3], coeffs.values[4], coeffs.values[5], 0);
+
     const double sqrLength = lineDirection.squaredNorm();
     Eigen::Vector4f eigenPoint;
+
     for (std::size_t i = 0; i < cloud->size(); ++i) {
         if (ignorePointIndices[i]) {
             continue;
