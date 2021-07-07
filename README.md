@@ -42,8 +42,8 @@ make app # to build the examples
 - test 3d line detection example
 
 ```bash
-# ./build/examples/3d_line_detection_app [path/to/pcd/file]
-# eg: ./build/examples/3d_line_detection_app ./data/test_cloud.pcd
+# ./build/examples/3d_line_detection_app [path/to/pcd/file] [use/default/setting/yes:1/no:0] [num/range/bin] [sphere/granularity] [min/num/vote] [distance/to/line/thresh]
+# eg: ./build/examples/3d_line_detection_app ./data/test_cloud.pcd 0 64 4 10 0.2
 ```
 
 <table>
