@@ -34,6 +34,10 @@ std::vector<int> LineSegment3D<POINT_CLOUD_TYPE>::getPointIndicesCloseToLine(
         throw std::runtime_error("sizes mistmach");
     }
 
+    if (coeffs.values.size() != 6) {
+        throw std::runtime_error("invalid size of line model coefficients");
+    }
+
     std::vector<int> pointIndices;
 
     const Eigen::Vector4f linePoint(coeffs.values[0], coeffs.values[1], coeffs.values[2], 0);
