@@ -49,7 +49,7 @@ template <typename POINT_CLOUD_TYPE> class LineSegment3D
         return m_inlierIndices;
     }
 
-    PointCloudPtr projectPointsOnLine() const;
+    PointCloudPtr projectPointsOnLine(const bool sortAlongLinePositiveDirection = true) const;
 
  private:
     template <typename T>

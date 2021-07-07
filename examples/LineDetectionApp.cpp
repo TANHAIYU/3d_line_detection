@@ -116,19 +116,11 @@ namespace
 void addLine(const pcl::visualization::PCLVisualizer::Ptr& viewer, const LineSegment3D& lineSegment,
              const std::string& lineLabel, const std::string& projectedLabel, const std::array<double, 3>& color)
 {
-    pcl::ModelCoefficients modifiedCoeffs = lineSegment.coeffs();
-    static const float scaleFactor = 2.5;
-    modifiedCoeffs.values[0] -= scaleFactor * modifiedCoeffs.values[3];
-    modifiedCoeffs.values[1] -= scaleFactor * modifiedCoeffs.values[4];
-    modifiedCoeffs.values[2] -= scaleFactor * modifiedCoeffs.values[5];
-    modifiedCoeffs.values[3] *= 2 * scaleFactor;
-    modifiedCoeffs.values[4] *= 2 * scaleFactor;
-    modifiedCoeffs.values[5] *= 2 * scaleFactor;
-
-    viewer->addLine(modifiedCoeffs, lineLabel);
+    auto projectedCloud = lineSegment.projectPointsOnLine();
+    viewer->addLine(projectedCloud->points.front(), projectedCloud->points.back(), color[0], color[1], color[2],
+                    lineLabel);
     viewer->setShapeRenderingProperties(pcl::visualization::PCL_VISUALIZER_LINE_WIDTH, 1, lineLabel);
 
-    auto projectedCloud = lineSegment.projectPointsOnLine();
     viewer->addPointCloud<PointCloudType>(projectedCloud, projectedLabel);
     viewer->setPointCloudRenderingProperties(pcl::visualization::PCL_VISUALIZER_COLOR, color[0], color[1], color[2],
                                              projectedLabel);

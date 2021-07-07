@@ -8,7 +8,8 @@
 namespace geometry
 {
 template <typename POINT_CLOUD_TYPE>
-typename LineSegment3D<POINT_CLOUD_TYPE>::PointCloudPtr LineSegment3D<POINT_CLOUD_TYPE>::projectPointsOnLine() const
+typename LineSegment3D<POINT_CLOUD_TYPE>::PointCloudPtr
+LineSegment3D<POINT_CLOUD_TYPE>::projectPointsOnLine(const bool sortAlongLinePositiveDirection) const
 {
     PointCloudPtr extracted(new PointCloud);
     pcl::copyPointCloud(*m_cloud, m_inlierIndices, *extracted);
@@ -17,6 +18,17 @@ typename LineSegment3D<POINT_CLOUD_TYPE>::PointCloudPtr LineSegment3D<POINT_CLOU
     projector.setInputCloud(extracted);
     projector.setModelCoefficients(pcl::ModelCoefficients::Ptr(new pcl::ModelCoefficients(m_coeffs)));
     projector.filter(*extracted);
+
+    if (sortAlongLinePositiveDirection) {
+        auto calcSignedDistToPlanePoint = [this](const PointCloudType& p) {
+            return (p.x - m_coeffs.values[0]) * m_coeffs.values[3] + (p.y - m_coeffs.values[1]) * m_coeffs.values[4] +
+                   (p.z - m_coeffs.values[2]) * m_coeffs.values[5];
+        };
+        std::sort(extracted->points.begin(), extracted->points.end(),
+                  [calcSignedDistToPlanePoint](const auto& e1, const auto& e2) {
+                      return calcSignedDistToPlanePoint(e1) < calcSignedDistToPlanePoint(e2);
+                  });
+    }
 
     return extracted;
 }
